@@ -1,0 +1,84 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-shopify_ai}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - backend/.env
+    depends_on:
+      - postgres
+      - redis
+      - ai
+      - whatsapp
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    env_file:
+      - ai/.env
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./ai:/app
+    depends_on:
+      - redis
+
+  whatsapp:
+    build:
+      context: ./whatsapp
+      dockerfile: Dockerfile
+    env_file:
+      - whatsapp/.env
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./whatsapp:/app
+      - ./whatsapp/sessions:/app/sessions
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - frontend/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:
