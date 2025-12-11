@@ -1,40 +1,46 @@
+/**
+ * Updated Payments Controller — Manual Payments Only
+ * Roman Urdu comments:
+ * - User payment start karta hai => system instructions AI ko deta hai
+ * - User screenshot bhejta hai => DB me save hota hai
+ * - Admin verification karta hai
+ */
+
 import { Request, Response } from "express";
 import paymentService from "../../services/payment.service";
 import prisma from "../../db";
 
-/**
- * Payments controller: create + webhook + get QR
- */
-
 export async function createPayment(req: any, res: Response) {
   try {
     const { amount, method } = req.body;
-    const payment = await paymentService.createPayment(req.user.id, Number(amount), method);
-    res.json({ ok: true, payment });
+
+    const { payment, instructions } = await paymentService.createManualPayment(
+      req.user.id,
+      Number(amount),
+      method
+    );
+
+    res.json({
+      ok: true,
+      payment,
+      instructions  // AI ko yeh bhejna hota hai
+    });
+
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 }
 
-export async function webhook(req: Request, res: Response) {
-  // validate based on provider — placeholder
-  const provider = req.params.provider;
-  // TODO: verify signature
-  const body = req.body;
-  // update payment by provider reference
-  // example: find by metadata.ref
-  // here we accept minimal flow
-  res.json({ ok: true, provider, received: true });
+// Screenshot upload handler
+export async function uploadScreenshot(req: any, res: Response) {
+  const { paymentId, url } = req.body;
+  const updated = await paymentService.savePaymentScreenshot(paymentId, url);
+  res.json({ ok: true, payment: updated });
 }
 
-export async function getPaymentQR(req: any, res: Response) {
-  const { paymentId } = req.params;
-  const p = await prisma.payment.findUnique({ where: { id: paymentId } });
-  if (!p) return res.status(404).json({ error: "Payment not found" });
-  // generate simple QR payload (signed)
-  const jwt = require("jsonwebtoken");
-  const token = jwt.sign({ pid: paymentId }, process.env.PAYMENT_QR_SECRET || "change_me", { expiresIn: "1h" });
-  const url = `${req.protocol}://${req.get("host")}/api/payments/confirm?token=${token}`;
-  // return url (frontend can generate QR image)
-  res.json({ ok: true, url });
+// Admin verifies payment
+export async function verify(req: any, res: Response) {
+  const { paymentId, status } = req.body;
+  const updated = await paymentService.verifyPayment(paymentId, status);
+  res.json({ ok: true, payment: updated });
 }
