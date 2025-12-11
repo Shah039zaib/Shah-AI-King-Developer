@@ -105,3 +105,13 @@ enum MessageDirection {
   IN
   OUT
 }
+model PaymentAccount {
+  id        String   @id @default(uuid())
+  type      String   // easypaisa | jazzcash | bank
+  title     String?  // bank title
+  number    String?  // easypaisa/jazzcash number
+  iban      String?  // bank IBAN
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
