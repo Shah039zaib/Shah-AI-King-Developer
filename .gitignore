@@ -1,0 +1,38 @@
+# Node / env
+node_modules/
+**/node_modules/
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.tmp
+.tmp*/
+
+# Next.js
+frontend/.next
+frontend/out
+
+# Prisma
+backend/prisma/migrations
+backend/.env
+backend/dev.db
+
+# Sessions & uploads (WhatsApp)
+whatsapp/sessions/
+whatsapp/tmp/
+whatsapp/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
