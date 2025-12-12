@@ -11,6 +11,7 @@ import paymentRoutes from "./modules/payments/payments.routes";
 import aiRoutes from "./modules/ai/ai.routes";
 import adminRoutes from "./modules/admin/admin.routes";
 import exportRoutes from "./modules/export/export.routes";
+import whatsappRoutes from "./modules/whatsapp/whatsapp.routes";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/exports", exportRoutes);
+app.use("/api/webhooks/whatsapp", whatsappRoutes);
 
 export default app;
