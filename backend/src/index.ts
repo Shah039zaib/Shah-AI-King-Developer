@@ -1,5 +1,6 @@
 // index.ts — server start
 import http from "http";
+import "./../scripts/prisma-baseline"; // auto baseline
 import app from "./app";
 import { PORT } from "./config/env";
 import initSockets from "./sockets";
