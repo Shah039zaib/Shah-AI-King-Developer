@@ -1,3 +1,7 @@
+"scripts": {
+  "prisma:baseline": "ts-node ./scripts/prisma-baseline.ts"
+},
+
 {
   "name": "shopify-whatsapp-ai-backend",
   "version": "1.0.0",
