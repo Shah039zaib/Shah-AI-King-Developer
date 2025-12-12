@@ -30,14 +30,16 @@ async function autoBaseline() {
     console.log("⚠️ Existing DB detected & no migrations found. Creating baseline...");
 
     execSync(
-      "npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0000_baseline/migration.sql",
-      { stdio: "inherit", shell: true }
-    );
+  "npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/0000_baseline/migration.sql",
+  { stdio: "inherit", shell: "/bin/bash" } as any
+);
+
 
     execSync(
-      "npx prisma migrate resolve --applied 0000_baseline",
-      { stdio: "inherit", shell: true }
-    );
+  "npx prisma migrate resolve --applied 0000_baseline",
+  { stdio: "inherit", shell: "/bin/bash" } as any
+);
+
 
     console.log("✅ Baseline migration applied automatically.");
   } 
@@ -45,9 +47,10 @@ async function autoBaseline() {
     console.log("🆕 Empty DB detected → Running full migrate");
 
     execSync("npx prisma migrate dev --name init", {
-      stdio: "inherit",
-      shell: true,
-    });
+  stdio: "inherit",
+  shell: "/bin/bash",
+} as any);
+
   } 
   else {
     console.log("👌 Migrations directory already exists → Normal environment.");
