@@ -1,0 +1,86 @@
+name: Full Services CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  run-services-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      # STEP 1: Get repo code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # STEP 2: Setup Node
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # ----------------------------------------
+      # BACKEND SERVICE CHECK
+      # ----------------------------------------
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm install
+
+      - name: Validate Prisma Schema (Backend)
+        working-directory: backend
+        run: npx prisma validate
+
+      - name: Backend TypeScript Check
+        working-directory: backend
+        run: npx tsc --noEmit
+
+      - name: Backend Build Check
+        working-directory: backend
+        run: npm run build || exit 1
+
+      # ----------------------------------------
+      # FRONTEND SERVICE CHECK
+      # ----------------------------------------
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm install
+
+      - name: Frontend TypeScript Check
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Frontend Build Check
+        working-directory: frontend
+        run: npm run build || exit 1
+
+      # ----------------------------------------
+      # AI SERVICE CHECK
+      # ----------------------------------------
+      - name: Install AI Service Dependencies
+        working-directory: ai
+        run: npm install
+
+      - name: AI TypeScript Check
+        working-directory: ai
+        run: npx tsc --noEmit
+
+      - name: AI Build Check
+        working-directory: ai
+        run: npm run build || exit 1
+
+      # ----------------------------------------
+      # WHATSAPP SERVICE CHECK
+      # ----------------------------------------
+      - name: Install WhatsApp Service Dependencies
+        working-directory: whatsapp
+        run: npm install
+
+      - name: WhatsApp TypeScript Check
+        working-directory: whatsapp
+        run: npx tsc --noEmit
+
+      - name: WhatsApp Build Check
+        working-directory: whatsapp
+        run: npm run build || exit 1
